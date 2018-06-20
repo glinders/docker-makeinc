@@ -15,13 +15,7 @@ define docker-does-container-exist
 $(shell if docker inspect --type container $1 >/dev/null 2>&1;then echo yes;else echo no;fi)
 endef
 
-# check that a docker image exists
-# syntax: echo $(call docker-does-image-exist,<image>)
-define docker-does-image-exist
-$(shell if [ `docker inspect --type image $1 2>/dev/null|wc -l` -ne 0 ];then echo yes;else echo no;fi)
-endef
-
-# check that a docker image of a specific version exists
+# check that a docker image (of a specific version) exists
 # syntax: echo $(call docker-does-image-exist,<imagename>,<imageversion>)
 # do not include any spaces in the call
 define docker-does-image-version-exist
@@ -33,7 +27,7 @@ endef
 TESTCONTAINERNAME=test-docker-calls-container-name
 NONECONTAINERNAME=not-existing-container-name
 TESTIMAGENAME=ubuntu
-TESTIMAGEVERSION=16.04
+TESTIMAGEVERSION=18.04
 NONEIMAGENAME:=not-existing-image-name
 NONEIMAGEVERSION=not-existing-image-version
 
@@ -46,12 +40,6 @@ NONEIMAGEVERSION=not-existing-image-version
 	# check name of existing container
 	if [ "$(call docker-does-container-exist,$(TESTCONTAINERNAME))" != "yes" ] ; \
 		then echo test2 ; exit 1 ; fi
-	# check name of not existing image
-	if [ "$(call docker-does-image-exist,$(NONEIMAGENAME))" != "no" ] ; \
-		then echo test3 ; exit 1 ; fi
-	# check name of existing image
-	if [ "$(call docker-does-image-exist,$(TESTIMAGENAME))" != "yes" ] ; \
-		then echo test4 ; exit 1 ; fi
 	# check all 4 name and version combinations 
 	if [ "$(call docker-does-image-version-exist,$(NONEIMAGENAME),$(NONEIMAGEVERSION))" != "no" ] ; \
 		then echo test5 ; exit 1 ; fi
